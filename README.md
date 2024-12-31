@@ -2,6 +2,7 @@
 Bu script, daha önce paylaşılmış olan 'dh-freecam' scriptinin geliştirilmiş bir versiyonudur.
 
 Bu mod FiveM'e serbest kamera özelliği ekleyerek oyuncuların kamerayı dünya üzerinde serbestçe hareket ettirebilmelerini sağlar. 
+[Önizlenim](https://streamable.com/pp4pun)
 
 ## Özellikler
 - Serbest Kamera Hareketi: Kamerayı ayarlanabilir hız ile istediğiniz yöne hareket ettirin.
@@ -22,7 +23,8 @@ Bu mod FiveM'e serbest kamera özelliği ekleyerek oyuncuların kamerayı dünya
 ## Free Cam Mod #EN
 This script is an improved version of the previously shared 'dh-freecam' script.
 
-This mod adds a free camera feature to FiveM, allowing players to move the camera freely around the world. 
+This mod adds a free camera feature to FiveM, allowing players to move the camera freely around the world.
+[Priview](https://streamable.com/pp4pun)
 
 ## Features
 - Free Camera Movement: Move the camera in any direction with adjustable speed.
