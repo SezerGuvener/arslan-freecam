@@ -16,7 +16,7 @@ Bu mod FiveM'e serbest kamera özelliği ekleyerek oyuncuların kamerayı dünya
 - server.cfg dosyasına aşağıdaki satırı ekleyin:
 - 
     ```bash
-    ensure arslan-compass
+    ensure arslan-freecam
     ```
 
 ## Free Cam Mod #EN
@@ -37,5 +37,5 @@ This mod adds a free camera feature to FiveM, allowing players to move the camer
 - In the server.cfg file, add the following line:
 - 
     ```bash
-    ensure arslan-compass
+    ensure arslan-freecam
     ```
