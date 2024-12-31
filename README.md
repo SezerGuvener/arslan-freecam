@@ -1,4 +1,4 @@
-## Ücretsiz Kamera Modu #TR
+## Ücretsiz Free Cam Modu #TR
 Bu script, daha önce paylaşılmış olan 'dh-freecam' scriptinin geliştirilmiş bir versiyonudur.
 
 Bu mod FiveM'e serbest kamera özelliği ekleyerek oyuncuların kamerayı dünya üzerinde serbestçe hareket ettirebilmelerini sağlar. 
