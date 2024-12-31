@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arslan Free Cam Help</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #helpBox {
+            position: fixed;
+            left: 30px;
+            bottom: 50%;
+            transform: translateY(50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 9999;
+        }
+
+        #helpBox h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+
+        #helpBox ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        #helpBox ul li {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="helpBox">
+        <h2>Free Cam Kontrolleri</h2>
+        <ul>
+            <li> </li>
+            <li><b>W/S</b> İleri/geri hareket ettirir</li>
+            <li><b>A/D</b> Sağa/sola hareket ettirir</li>
+            <li><b>Q/E</b> Yukarı/aşağı hareket ettirir</li>
+            <li><b>Shift</b> Kamera hareket hızını artırın/azaltın</li>
+            <li><b>Mouse</b> Kamera açısını ayarlama</li>
+            <li><b>Sol/Sağ Oklar</b> Kamerayı çevirir</li>
+            <li><b>Scroll Yukarı/Aşağı</b> Yakınlaştırma/uzaklaştırma</li>
+            <li> </li>
+            <li><b>H</b> Bu yardım kutusunu aç/kapat</li>
+        </ul>
+    </div>
+
+    <script>
+        window.addEventListener('message', (event) => {
+            if (event.data.action === 'show') {
+                document.getElementById('helpBox').style.display = 'block';
+            } else if (event.data.action === 'hide') {
+                document.getElementById('helpBox').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
