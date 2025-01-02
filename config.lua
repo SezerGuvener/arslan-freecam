@@ -8,5 +8,5 @@ Config.ActivationCommand = "freecam" -- Komut ile aktif etme
 Config.ActivationKey = 236 -- 'v' Free Kamerayı Etkinleştirir
 Config.ActivationHoldTime = 1000 -- Milisaniye cinsinden 1 saniye
 Config.HelpToggleKey = 104 -- 'h' Free Kamera için yardım kutusunu açıp kapatır
-Config.MoveSpeed = 0.1 -- Varsayılan hız
+Config.MoveSpeed = 0.01 -- Varsayılan hız
 Config.SpeedMultiplier = 2.0 -- Shift ile artırılmış hız
