@@ -1,14 +1,13 @@
-local currentFilterIndex = 1
 local cam = nil
 local freeCamActive = false
 local initialPos = nil
-local currentFOV = 90.0 -- Varsayılan FOV
-local rollAngle = 0.0 -- İlk dönürme açısı
-local activationStartTime = nil -- V tuşuna basma süresi
-local helpVisible = true -- Yardım kutusu görünürlüğü
-local deactivateDistance = 15.0 -- Freecam'in kapanacağı mesafe
+local initialRot = nil
+local currentFOV = nil
+local rollAngle = 0.0
+local helpVisible = false
+local activationStartTime = nil
+local initialOffset = nil
 
--- Yardım kutusu görünürlüğünü kaydetme
 local function saveHelpVisibility()
     SetResourceKvp("freecam_help_visible", tostring(helpVisible))
 end
@@ -17,48 +16,80 @@ local function loadHelpVisibility()
     local savedValue = GetResourceKvpString("freecam_help_visible")
     if savedValue ~= nil then
         helpVisible = savedValue == "true"
+    else
+        helpVisible = false
     end
 end
 
--- Serbest kamera modunu değiştirme fonksiyonu
+local function calculateCameraPosition()
+    local playerPed = PlayerPedId()
+    local playerCoords = GetEntityCoords(playerPed)
+    local playerHeading = GetEntityHeading(playerPed)
+
+    local headingRad = math.rad(playerHeading)
+    local forwardOffset = vector3(-math.sin(headingRad), math.cos(headingRad), 0.5)
+
+    return playerCoords + forwardOffset
+end
+
 local function toggleFreeCam()
+    local playerPed = PlayerPedId()
+
     if not freeCamActive then
-        -- Freecam'i Etkinleştir
         freeCamActive = true
-        local playerPed = PlayerPedId()
-        initialPos = GetEntityCoords(playerPed)
 
-        -- Yeni bir kamera oluştur
-        cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+        currentFOV = GetGameplayCamFov()
 
-        -- Kamera özelliklerini ayarla
-        SetCamCoord(cam, initialPos.x, initialPos.y, initialPos.z + 1.0)
-        SetCamRot(cam, 0.0, 0.0, 0.0)
-        SetCamFov(cam, currentFOV)
+        local playerCoords = GetEntityCoords(playerPed)
+        -- Kamera tekrar açıldığında, önceki offset ve rotasyon varsa kullan
+        if initialOffset and initialRot then
+            local camStartPos = playerCoords + initialOffset
+            initialPos = camStartPos
+            cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+            SetCamCoord(cam, camStartPos.x, camStartPos.y, camStartPos.z)
+            SetCamRot(cam, initialRot.x, initialRot.y, initialRot.z)
+            SetCamFov(cam, currentFOV)
+        else
+            local camStartPos = initialPos or calculateCameraPosition()
+            initialPos = camStartPos
+            cam = CreateCam("DEFAULT_SCRIPTED_CAMERA", true)
+            SetCamCoord(cam, camStartPos.x, camStartPos.y, camStartPos.z)
+            SetCamRot(cam, 180.0, 0.0, GetEntityHeading(playerPed))
+            SetCamFov(cam, currentFOV)
+        end
 
-        -- Kamerayı etkin olarak ayarla
         SetCamActive(cam, true)
         RenderScriptCams(true, false, 0, true, true)
 
-        -- Görünürse yardım kutusunu göster
+        SetEntityVisible(playerPed, true)
+        SetEntityAlpha(playerPed, 255, false)
+
         if helpVisible then
             SendNUIMessage({ action = "show" })
+        else
+            SendNUIMessage({ action = "hide" })
         end
+
     else
-        -- Free Cam'i devre dışı bırak
         freeCamActive = false
 
-        -- Kamerayı yok et
+        if cam then
+            local camPos = GetCamCoord(cam)
+            local playerCoords = GetEntityCoords(playerPed)
+            initialOffset = camPos - playerCoords
+            initialRot = GetCamRot(cam, 2)
+            currentFOV = GetCamFov(cam)
+            initialPos = camPos
+        end
+
         DestroyCam(cam, false)
         RenderScriptCams(false, false, 0, true, true)
         cam = nil
 
-        -- Yardım kutusunu gizle
         SendNUIMessage({ action = "hide" })
     end
 end
 
--- Kameranın dönüşünden ileri vektörü hesaplayan fonksiyon
 local function GetCamForwardVector(cam)
     local rot = GetCamRot(cam, 2)
     local x = -math.sin(math.rad(rot.z)) * math.abs(math.cos(math.rad(rot.x)))
@@ -67,42 +98,44 @@ local function GetCamForwardVector(cam)
     return vector3(x, y, z)
 end
 
--- Kameranın dönüşünden sağ vektörü hesaplayan fonksiyon
 local function GetCamRightVector(cam)
     local forwardVector = GetCamForwardVector(cam)
-    return vector3(-forwardVector.y, forwardVector.x, 0.0)
+    return vector3(forwardVector.y, -forwardVector.x, 0.0)
 end
 
--- Belirli oyuncu kontrollerini devre dışı bırakma fonksiyonu
 local function disablePlayerControls()
-    DisableControlAction(0, 30, true) -- D (Hareket)
-    DisableControlAction(0, 31, true) -- S (Hareket)
-    DisableControlAction(0, 140, true) -- R (Yumruk)
-    DisableControlAction(0, 141, true) -- Q (Tekme)
-    DisableControlAction(0, 142, true) -- Mouse Sol Tık (Yumruk)
-    DisableControlAction(0, 24, true) -- Mouse Sol Tık (Yumruk/Ateş)
-    DisableControlAction(0, 25, true) -- Mouse Sağ Tık (Nişan Alma)
-    DisableControlAction(0, 22, true) -- Space (Zıplama)
-    DisableControlAction(0, 23, true) -- F (Araç Bin)
-    DisableControlAction(0, 75, true) -- F (Araç İn)
-    DisableControlAction(0, 45, true) -- R (Reload)
-    DisableControlAction(0, 44, true) -- Q (Cover)
+    DisableControlAction(0, 30, true)
+    DisableControlAction(0, 31, true)
+    DisableControlAction(0, 140, true)
+    DisableControlAction(0, 141, true)
+    DisableControlAction(0, 142, true)
+    DisableControlAction(0, 24, true)
+    DisableControlAction(0, 25, true)
+    DisableControlAction(0, 22, true)
+    DisableControlAction(0, 23, true)
+    DisableControlAction(0, 75, true)
+    DisableControlAction(0, 45, true)
+    DisableControlAction(0, 44, true)
 end
 
--- Etkinleştirme komutunu
+local function notification(msg)
+    SetNotificationTextEntry("STRING")
+    AddTextComponentString(msg)
+    DrawNotification(false, false)
+end
+
 RegisterCommand(Config.ActivationCommand, function()
     toggleFreeCam()
 end, false)
 
--- V tuşu etkinleştirme mantığını ve serbest kamera hareketini işlemek
 Citizen.CreateThread(function()
     loadHelpVisibility()
 
     while true do
         Citizen.Wait(0)
 
-        -- Bekleme süresi ile V tuşu aktivasyonunu
-        if IsControlPressed(1, Config.ActivationKey) then
+        -- V tuşuna basılı tutulduğunda aç/kapat
+        if IsControlPressed(0, Config.ActivationKey) then
             if not activationStartTime then
                 activationStartTime = GetGameTimer()
             elseif GetGameTimer() - activationStartTime >= Config.ActivationHoldTime then
@@ -113,85 +146,79 @@ Citizen.CreateThread(function()
             activationStartTime = nil
         end
 
-        -- Yardım kutusunun görünürlüğünü değiştirmek için H tuşunu kullanın
-        if freeCamActive and IsControlJustPressed(1, Config.HelpToggleKey) then
+        -- Yardım kutusunu aç/kapat H tuşu ile
+        if freeCamActive and IsControlJustPressed(0, Config.HelpToggleKey) then
             helpVisible = not helpVisible
             saveHelpVisibility()
             SendNUIMessage({ action = helpVisible and "show" or "hide" })
         end
 
         if freeCamActive then
-            -- Freecam etkinleştirildiğinde başlangıç pozisyonunu kaydet
             if not initialPos then
                 initialPos = GetCamCoord(cam)
             end
-        
-            -- Oyuncu kontrollerini devre dışı bırak
+
             disablePlayerControls()
-        
-            -- Kameranın geçerli konumunu ve dönüşünü alır
+
             local camPos = GetCamCoord(cam)
             local camRot = GetCamRot(cam, 2)
             local moveSpeed = Config.MoveSpeed
-        
-            -- Hız çarpanı kontrolü (Shift tuşu)
-            if IsControlPressed(1, 21) then -- Shift tuşu
+
+            if IsControlPressed(0, 21) then -- SHIFT
                 moveSpeed = moveSpeed * Config.SpeedMultiplier
             end
-        
-            -- Kamera hareket kontrolleri
-            if IsControlPressed(1, 32) then -- W (ileri hareket)
+
+            if IsControlPressed(0, 32) then -- W
                 camPos = camPos + (GetCamForwardVector(cam) * moveSpeed)
             end
-            if IsControlPressed(1, 33) then -- S (geri hareket)
+            if IsControlPressed(0, 33) then -- S
                 camPos = camPos - (GetCamForwardVector(cam) * moveSpeed)
             end
-            if IsControlPressed(1, 34) then -- A (sola hareket)
-                camPos = camPos + (GetCamRightVector(cam) * moveSpeed)
-            end
-            if IsControlPressed(1, 35) then -- D (sağa hareket)
+            if IsControlPressed(0, 34) then -- A
                 camPos = camPos - (GetCamRightVector(cam) * moveSpeed)
             end
-            if IsControlPressed(1, 52) then -- Q (yukarı hareket)
+            if IsControlPressed(0, 35) then -- D
+                camPos = camPos + (GetCamRightVector(cam) * moveSpeed)
+            end
+            if IsControlPressed(0, 52) then -- Q yukarı
                 camPos = camPos + vector3(0.0, 0.0, moveSpeed)
             end
-            if IsControlPressed(1, 38) then -- E (aşağı hareket)
+            if IsControlPressed(0, 38) then -- E aşağı
                 camPos = camPos - vector3(0.0, 0.0, moveSpeed)
             end
-        
-            -- Kamera konumunu ayarla
-            SetCamCoord(cam, camPos)
-        
-            -- Kamera döndürme kontrolleri (fare kontrolleri)
-            local xMagnitude = GetControlNormal(0, 1) * 8.0 -- Mouse X
-            local yMagnitude = GetControlNormal(0, 2) * 8.0 -- Mouse Y
 
-            if IsControlPressed(1, 174) then
+            SetCamCoord(cam, camPos)
+
+            local xMagnitude = GetControlNormal(0, 1) * 8.0
+            local yMagnitude = GetControlNormal(0, 2) * 8.0
+
+            -- Kamerayı roll ile döndürme, sağ/sol ok
+            if IsControlPressed(0, 174) then -- Sol ok
                 rollAngle = rollAngle - 1.0
             end
-            if IsControlPressed(1, 175) then
+            if IsControlPressed(0, 175) then -- Sağ ok
                 rollAngle = rollAngle + 1.0
             end
 
             camRot = vector3(camRot.x - yMagnitude, camRot.y, camRot.z - xMagnitude)
             SetCamRot(cam, camRot.x, rollAngle, camRot.z, 2)
 
-            -- Yakınlaştırma kontrolleri (FOV ayarı)
-            if IsControlPressed(1, 15) then -- Yakınlaştırmak için yukarı kaydırma veya Page Up tuşu
-                currentFOV = math.max(30.0, currentFOV - 1.0) -- Minimum 30 FOV
+            -- Scroll zoom (mouse tekerleği)
+            local scrollUp = IsDisabledControlJustPressed(0, 15)
+            local scrollDown = IsDisabledControlJustPressed(0, 14)
+            if scrollUp then
+                currentFOV = math.max(30.0, currentFOV - 5.0)
+                SetCamFov(cam, currentFOV)
+            elseif scrollDown then
+                currentFOV = math.min(120.0, currentFOV + 5.0)
                 SetCamFov(cam, currentFOV)
             end
-            if IsControlPressed(1, 14) then -- Uzaklaştırmak için aşağı kaydırma veya Page Down tuşu
-                currentFOV = math.min(120.0, currentFOV + 1.0) -- Maksimum 120 FOV
-                SetCamFov(cam, currentFOV)
-            end
-            
-            -- Kamera başlangıç pozisyonundan uzaklık kontrolü
+
             local distance = #(camPos - initialPos)
-            if distance > deactivateDistance then
-                toggleFreeCam() -- Freecam'i kapat
-                initialPos = nil -- Başlangıç pozisyonunu sıfırla
-                print("Freecam, belirlenen mesafeden uzaklaşıldığı için kapatıldı.")
+            if distance > Config.DeactivateDistance then
+                toggleFreeCam()
+                initialPos = nil
+                notification('Freecam belirlenen mesafeden uzaklaşıldığı için ~r~kapatıldı.')
             end
         end
     end
