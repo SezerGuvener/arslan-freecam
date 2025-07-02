@@ -1,12 +1,9 @@
 Config = {}
 
--- Kameranın hareket edebileceği aralığı tanımlama
-Config.CameraRange = 100.0 -- Kameranın hareket edebileceği maksimum mesafeyi ayarlamak için bu değeri ayarlayın
-
--- Serbest kamera modu için yapılandırma ayarları
-Config.ActivationCommand = "freecam" -- Komut ile aktif etme
-Config.ActivationKey = 236 -- 'v' Free Kamerayı Etkinleştirir
-Config.ActivationHoldTime = 1000 -- Milisaniye cinsinden 1 saniye
-Config.HelpToggleKey = 104 -- 'h' Free Kamera için yardım kutusunu açıp kapatır
-Config.MoveSpeed = 0.01 -- Varsayılan hız
-Config.SpeedMultiplier = 2.0 -- Shift ile artırılmış hız
+Config.ActivationCommand = "freecam"
+Config.ActivationKey = 236 -- V tuşu
+Config.ActivationHoldTime = 1000 -- ms, 1 saniye basılı tutma süresi
+Config.HelpToggleKey = 104 -- H tuşu
+Config.MoveSpeed = 0.05
+Config.SpeedMultiplier = 2.0
+Config.DeactivateDistance = 10.0
