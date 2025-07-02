@@ -1,34 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arslan Free Cam Help</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Qaisenix Playcam Help</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
+            background: transparent;
         }
 
         #helpBox {
             position: fixed;
             left: 30px;
-            bottom: 50%;
-            transform: translateY(50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            display: none;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 260px;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            color: #eee;
+            padding: 20px 25px;
+            user-select: none;
             z-index: 9999;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
         }
 
+
         #helpBox h2 {
-            margin: 0 0 10px;
-            font-size: 18px;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            font-size: 20px;
+            color: #f0a500;
+            text-align: center;
+            text-shadow: 0 0 5px #f0a500aa;
         }
 
         #helpBox ul {
@@ -38,7 +48,24 @@
         }
 
         #helpBox ul li {
-            margin: 5px 0;
+            margin: 8px 0;
+            padding-left: 8px;
+            position: relative;
+            color: #ccc;
+            font-weight: 500;
+        }
+
+        #helpBox ul li b {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        #helpBox ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #f0a500;
+            font-weight: 900;
         }
     </style>
 </head>
@@ -46,16 +73,14 @@
     <div id="helpBox">
         <h2>Free Cam Kontrolleri</h2>
         <ul>
-            <li> </li>
-            <li><b>W/S</b> İleri/geri hareket ettirir</li>
-            <li><b>A/D</b> Sağa/sola hareket ettirir</li>
-            <li><b>Q/E</b> Yukarı/aşağı hareket ettirir</li>
-            <li><b>Shift</b> Kamera hareket hızını artırın/azaltın</li>
-            <li><b>Mouse</b> Kamera açısını ayarlama</li>
-            <li><b>Sol/Sağ Oklar</b> Kamerayı çevirir</li>
-            <li><b>Scroll Yukarı/Aşağı</b> Yakınlaştırma/uzaklaştırma</li>
-            <li> </li>
-            <li><b>H</b> Bu yardım kutusunu aç/kapat</li>
+            <li><b>W / S</b> - İleri / geri hareket</li>
+            <li><b>A / D</b> - Sağa / sola hareket</li>
+            <li><b>Q / E</b> - Yukarı / aşağı hareket</li>
+            <li><b>Shift</b> - Hareket hızını artırır</li>
+            <li><b>Mouse</b> - Kamera açısını ayarlama</li>
+            <li><b>Sol / Sağ Ok</b> - Kamerayı döndürme</li>
+            <li><b>Scroll</b> - Zoom yapma</li>
+            <li><b>H</b> - Yardım kutusunu aç/kapat</li>
         </ul>
     </div>
 
