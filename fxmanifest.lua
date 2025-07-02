@@ -1,15 +1,19 @@
 fx_version 'cerulean'
 game 'gta5'
-description 'Free Cam'
+
+lua54 'yes'
+
 author 'Qaisenix'
+description 'Cinematic freecam'
+version '2.0.0'
 
-client_script 'client.lua'
-
-files {
+client_scripts {
     'config.lua',
-    'html/ui.html'
+    'client.lua'
 }
 
-shared_script 'config.lua'
-
 ui_page 'html/ui.html'
+
+files {
+    'html/ui.html'
+}
